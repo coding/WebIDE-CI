@@ -33,6 +33,8 @@ public class Server extends AbstractVerticle {
         vertx.createHttpServer()
                 .requestHandler(router(vertx)::accept)
                 .listen(8080);
+        vertx.setPeriodic(1000 * 60 * 5, timerID -> updatePR());
+        updatePR();
     }
 
     private Router router(Vertx vertx) {
@@ -45,6 +47,32 @@ public class Server extends AbstractVerticle {
     }
 
     private void index(RoutingContext ctx) {
+
+        ctx.put("pullMap", pullMap);
+
+        engine.render(ctx, "templates/index.html", res -> {
+            if (res.succeeded()) {
+                ctx.response().end(res.result());
+            } else {
+                ctx.fail(res.cause());
+            }
+        });
+
+
+    }
+
+    private WebClient client() {
+        WebClientOptions options = new WebClientOptions()
+                .setDefaultHost("api.github.com")
+                .setDefaultPort(443)
+                .setSsl(true)
+                .setMaxPoolSize(1)
+                .setKeepAlive(false);
+
+        return WebClient.create(vertx, options);
+    }
+
+    private void updatePR() {
         Observable.merge(
                 pullRequests("Coding", "WebIDE-Frontend"),
                 pullRequests("Coding", "WebIDE-Backend")
@@ -54,22 +82,11 @@ public class Server extends AbstractVerticle {
                 )
                 .subscribe(new Subscriber<SimpleEntry<String, JsonObject>>() {
                     @Override
-                    public void onCompleted() {
-                        ctx.put("pullMap", pullMap);
-
-                        engine.render(ctx, "templates/index.html", res -> {
-                            if (res.succeeded()) {
-                                ctx.response().end(res.result());
-                            } else {
-                                ctx.fail(res.cause());
-                            }
-                        });
-                    }
+                    public void onCompleted() {}
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        ctx.response().end(e.getMessage());
                     }
 
                     @Override
@@ -82,17 +99,6 @@ public class Server extends AbstractVerticle {
                         pullMap.clear();
                     }
                 });
-    }
-
-    private WebClient client() {
-        WebClientOptions options = new WebClientOptions()
-                .setDefaultHost("api.github.com")
-                .setDefaultPort(443)
-                .setSsl(true)
-                .setMaxPoolSize(1)
-                .setKeepAlive(false);
-
-        return WebClient.create(vertx, options);
     }
 
     private Observable<JsonObject> pullRequests(String owner, String repo) {
@@ -117,7 +123,7 @@ public class Server extends AbstractVerticle {
         JsonObject pull = pullMap.get(String.format("/repos/%s/%s/pulls/%s", owner, repo, id));
 
         String revision = "latest";
-        
+
         if (repo.equals("Coding-Frontend")) {
             revision = revision(pull);
         }
