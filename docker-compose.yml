@@ -4,15 +4,12 @@ services:
   dockerhub-webook:
     image: vangie/dockerhub-webhook
     container_name: ci-dockerhub-webhook
-    network_mode: bridge
-    environment:
-      - SERVER_PORT=3000
-      - TOKEN=${DOCKERHUB_TOKEN}
-      - ROUTE=/api
+    network_mode: bridge      
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./webhooks/dockerhub:/src/scripts
     environment:
+      - TOKEN=${DOCKERHUB_TOKEN}
       - VIRTUAL_HOST=dockerhub-webhook.${WEBIDE_CI_DOMAIN}
     restart: always
 
