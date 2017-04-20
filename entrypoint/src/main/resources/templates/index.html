@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WebIDE-CI</title>
+</head>
+
+<style>
+</style>
+
+<body>
+
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Updated at</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="prEntry: ${pullMap}">
+        <td>
+            <a th:href="${prEntry.value.getString('html_url')}" th:text="${prEntry.value.getString('title')}">rewrite Tab and DragAndDrop module with mobx</a>
+        </td>
+        <td th:text="${prEntry.value.getString('updated_at')}">2017-04-13T10:24:15Z</td>
+        <td><a th:href="@{${prEntry.key}}">open</a></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

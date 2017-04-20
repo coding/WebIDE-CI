@@ -1,0 +1,54 @@
+buildscript {
+    repositories {
+        maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+    }
+}
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+}
+
+sourceCompatibility = '1.8'
+mainClassName = 'io.vertx.core.Launcher'
+
+ext {
+    vertx_version = '3.4.1'
+    mainVerticleName = 'net.coding.Server'
+}
+
+
+repositories {
+    maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+}
+
+dependencies {
+    compile "io.vertx:vertx-core:$vertx_version"
+    compile "io.vertx:vertx-rx-java:$vertx_version"
+    compile "io.vertx:vertx-web:$vertx_version"
+    compile "io.vertx:vertx-web-client:$vertx_version"
+    compile "io.vertx:vertx-web-templ-thymeleaf:$vertx_version"
+    compile "ch.qos.logback:logback-classic:1.2.3"
+    
+    testCompile 'junit:junit:4.11'
+}
+
+shadowJar {
+    classifier = 'fat'
+    manifest {
+        attributes 'Main-Verticle': mainVerticleName
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}
+
+run {
+    args = ['run', mainVerticleName, "--redeploy=src/**/*.java", "--launcher-class=$mainClassName", "--on-redeploy='./gradlew classes'"]
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.5'
+}
