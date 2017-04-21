@@ -124,14 +124,14 @@ public class Server extends AbstractVerticle {
 
         String revision = "latest";
 
-        if (repo.equals("Coding-Frontend")) {
+        if (repo.equals("WebIDE-Frontend")) {
             revision = revision(pull);
         }
 
         String url = formatUrl(scheme, "frontend", revision, host);
 
         revision = "latest";
-        if (repo.equals("Coding-Backend")) {
+        if (repo.equals("WebIDE-Backend")) {
             revision = revision(pull);
         }
         Cookie cookie = Cookie.cookie("BACKEND_URL", formatUrl(scheme, "backend", revision, host));
