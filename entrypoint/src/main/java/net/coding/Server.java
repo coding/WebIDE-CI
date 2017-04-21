@@ -120,7 +120,7 @@ public class Server extends AbstractVerticle {
         String scheme = ctx.request().scheme();
         String host = ctx.request().host();
 
-        JsonObject pull = pullMap.get(String.format("/repos/%s/%s/pulls/%s", owner, repo, id));
+        JsonObject pull = pullMap.get(String.format("%s/%s/pull/%s", owner, repo, id));
 
         String revision = "latest";
 
