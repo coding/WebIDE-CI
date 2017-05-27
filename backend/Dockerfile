@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-ENV VERTICLE_FILE entrypoint-fat.jar
+ENV VERTICLE_FILE backend-fat.jar
 
 # Set the location of the verticles
 ENV VERTICLE_HOME /usr/verticles

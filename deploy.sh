@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd entrypoint
+cd backend
 ./gradlew clean shadowJar
 
 cd ..
